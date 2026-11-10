@@ -41,6 +41,4 @@ pip install networkx scikit-learn     # needed for steps 4 and 5
 
 F1DB, the open-source Formula 1 database (https://github.com/f1db/f1db), CC BY 4.0. Spot-checked against the Jolpica-F1 API (https://api.jolpi.ca/ergast/f1/).
 
-## Acknowledgement
 
-Parts of the analysis code were written with help from Claude (Anthropic). We ran, checked and can explain every step.
