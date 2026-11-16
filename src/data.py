@@ -6,7 +6,7 @@ rows = []
 for year in range(2014, 2027):
     for race_dir in sorted((base / str(year) / "races").iterdir()):
         quali_file = race_dir / "qualifying-results.yml"
-        if not quali_file.exists():          # race not run yet
+        if not quali_file.exists():
             continue
         race = yaml.safe_load(open(race_dir / "race.yml", encoding="utf-8"))
         for r in yaml.safe_load(open(quali_file, encoding="utf-8")):
