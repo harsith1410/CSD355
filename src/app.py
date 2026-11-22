@@ -6,7 +6,8 @@ Run from the project folder:
 
 Four tabs: driver ratings, teammate head-to-head, car pace, and a predictor.
 Everything is recomputed from data/teammate_gaps.csv and qualifying_clean.csv with the
-same functions as notebooks 03-05 (see dashboard_data.py and f1_stats.py).
+same functions as the pair_season_stats, ratings_car_pace and ml_model notebooks
+(see dashboard_data.py and f1_stats.py).
 """
 
 import os
@@ -256,7 +257,7 @@ with tab_predict:
         m2.metric(f"In seconds at {track_names[track]}", f"{seconds(p['hybrid'], lap):.3f} s",
                   help=f"Pole lap used: {lap:.3f} s")
         m3.metric("95% prediction interval", f"{p['hybrid'] - hw:+.2f} to {p['hybrid'] + hw:+.2f}%")
-        parts = [f"Method: **{p['used']}** (the Hybrid model chosen in notebook 05)."]
+        parts = [f"Method: **{p['used']}** (the Hybrid model chosen in ml_model.ipynb)."]
         if p["last"] is not None:
             parts.append(f"They were teammates in {latest}: gap {p['last']:+.2f}%.")
         parts.append(f"Random Forest on its own: {p['forest']:+.2f}%.")
@@ -267,5 +268,5 @@ with tab_predict:
                    f"of 95% of the model's past errors ({ml['n_val']} predictions, each made from earlier seasons only).")
 
 st.divider()
-st.caption("CSD355 Foundation of Data Science · Sanjith & Harsith N V · Methods in notebooks 03–05 "
+st.caption("CSD355 Foundation of Data Science · Sanjith & Harsith N V · Methods in the pair_season_stats, ratings_car_pace and ml_model notebooks "
            "(f1_stats.py, dashboard_data.py). One-lap qualifying pace only, not race pace.")

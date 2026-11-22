@@ -34,7 +34,7 @@ def summary_numbers(base: dict) -> dict:
 
 
 def all_ratings(base: dict) -> tuple[pd.DataFrame, dict]:
-    """Rating vs Russell for every driver who raced in each season (same as notebook 04)."""
+    """Rating vs Russell for every driver who raced in each season (same as ratings_car_pace.ipynb)."""
     ps, gaps, tau2 = base["ps"], base["gaps"], base["tau2"]
     rows, fits = [], {}
     for year in base["seasons"]:
@@ -56,7 +56,7 @@ def driver_gap(fits: dict, year: int, a: str, b: str) -> tuple[float, float]:
 
 
 def car_pace(base: dict, fits: dict) -> pd.DataFrame:
-    """Car pace per team-season (Eq. 5), session-weighted over pairs (same as notebook 04)."""
+    """Car pace per team-season (Eq. 5), session-weighted over pairs (same as ratings_car_pace.ipynb)."""
     gaps, quali, usable = base["gaps"], base["quali"], base["usable"]
     gp = session_gap_to_fastest(gaps, quali)
     P = gp.groupby(PAIR_SEASON)["P_team"].apply(iqr_mean).unstack().reset_index()
@@ -153,7 +153,7 @@ def feature_row(base: dict, h: dict, a: str, b: str, season: int, *, assume_same
 
 
 def feature_table(base: dict) -> pd.DataFrame:
-    """One row per usable pair-season from 2015 (same as notebook 05, cell 3)."""
+    """One row per usable pair-season from 2015 (same as ml_model.ipynb)."""
     h = _helpers(base)
     rows = []
     for r in base["usable"][base["usable"]["year"] >= base["seasons"][0] + 1].itertuples():
@@ -178,7 +178,7 @@ def train_ml(base: dict) -> dict:
     """Hybrid model (last season's gap for returning pairs, Random Forest otherwise).
 
     Prediction interval = 95th percentile of the Hybrid's errors when each season from
-    2016 on is predicted from the seasons before it (expanding window, as in notebook 05).
+    2016 on is predicted from the seasons before it (expanding window, as in ml_model.ipynb).
     """
     F = feature_table(base)
     first_val, last_season = base["seasons"][0] + 2, base["seasons"][-1]

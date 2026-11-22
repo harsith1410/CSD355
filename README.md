@@ -10,11 +10,11 @@ Run the notebooks in `src/` in this order (each one reads the files the earlier 
 
 | Step | Notebook | What it does | Main outputs |
 |---|---|---|---|
-| 1 | `data.py` / `data.ipynb` | Extract F1DB qualifying data, convert lap times, Jolpica spot-check, pair teammates, compute gaps (Eq. 1) | `qualifying_clean.csv`, `data/teammate_gaps.csv` |
+| 1 | `build_raw.py` / `build_gaps.ipynb` | Extract F1DB qualifying data, convert lap times, Jolpica spot-check, pair teammates, compute gaps (Eq. 1) | `qualifying_clean.csv`, `data/teammate_gaps.csv` |
 | 2 | `analysis.ipynb` | Exploratory analysis and outliers | figures |
-| 3 | `03_pair_season_stats.ipynb` | IQR outliers (Eq. 2), t-intervals (Eq. 3), head-to-head, τ², pilot check | `data/pair_seasons.csv`, `figures/forest_2025_2026.png` |
-| 4 | `04_ratings_car_pace.ipynb` | Driver ratings vs Russell, chain backtest, car pace | `data/driver_ratings.csv`, `data/car_pace.csv`, 3 figures |
-| 5 | `05_ml_model.ipynb` | ML model with leakage-safe features, validation 2016–2024, test 2025–2026 | `data/ml_predictions.csv`, 2 figures |
+| 3 | `pair_season_stats.ipynb` | IQR outliers (Eq. 2), t-intervals (Eq. 3), head-to-head, τ², pilot check | `data/pair_seasons.csv`, `figures/forest_2025_2026.png` |
+| 4 | `ratings_car_pace.ipynb` | Driver ratings vs Russell, chain backtest, car pace | `data/driver_ratings.csv`, `data/car_pace.csv`, 3 figures |
+| 5 | `ml_model.ipynb` | ML model with leakage-safe features, validation 2016–2024, test 2025–2026 | `data/ml_predictions.csv`, 2 figures |
 
 Shared functions for steps 3–5 are in `src/f1_stats.py`.
 

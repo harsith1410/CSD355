@@ -1,6 +1,6 @@
 """Shared functions for the CSD355 F1 teammate-gap project.
 
-Used by 03_pair_season_stats.ipynb, 04_ratings_car_pace.ipynb and 05_ml_model.ipynb.
+Used by pair_season_stats.ipynb, ratings_car_pace.ipynb and ml_model.ipynb.
 Every function here follows the method in the project report:
   Eq. 1  gap = 100 * (tA - tB) / tB                 (already in teammate_gaps.csv)
   Eq. 2  1.5 x IQR outlier rule, within each pair-season
