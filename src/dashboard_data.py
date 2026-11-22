@@ -1,10 +1,3 @@
-"""Everything the dashboard computes, kept separate from the Streamlit screens.
-
-All results are recomputed from the two files `data.ipynb` saves
-(`teammate_gaps.csv` and `qualifying_clean.csv`) using the same functions as
-notebooks 03-05 (`f1_stats.py`), so the dashboard always matches the data.
-"""
-
 from __future__ import annotations
 
 import numpy as np
@@ -18,7 +11,6 @@ from f1_stats import (PAIR_SEASON, REFERENCE, REG_CHANGE_SEASONS, TEAM_LINEAGE,
 Z95 = 1.96
 
 
-# ----------------------------------------------------------------------------- base data
 def load_base() -> dict:
     """Gaps (with outlier flag), the cleaned qualifying table, pair-seasons and tau^2."""
     gaps = load_gaps()
@@ -26,8 +18,7 @@ def load_base() -> dict:
     ps = pair_season_table(gaps)
     tau2, _ = estimate_tau2(ps)
     usable = ps[ps["usable"]]
-    # Typical session-to-session spread of a pair's gap (clean sessions): used to turn a
-    # season-average prediction into a range for ONE qualifying session.
+    # typical per-session spread of a pair's gap, for one-session ranges
     session_sd = float(usable["sd"].median())
     return {"gaps": gaps, "quali": quali, "ps": ps, "usable": usable, "tau2": tau2,
             "session_sd": session_sd, "seasons": sorted(gaps["year"].unique())}
@@ -42,7 +33,6 @@ def summary_numbers(base: dict) -> dict:
             "last_round": int(gaps.loc[gaps["year"] == gaps["year"].max(), "round"].max())}
 
 
-# --------------------------------------------------------------------------- ratings
 def all_ratings(base: dict) -> tuple[pd.DataFrame, dict]:
     """Rating vs Russell for every driver who raced in each season (same as notebook 04)."""
     ps, gaps, tau2 = base["ps"], base["gaps"], base["tau2"]
@@ -65,7 +55,6 @@ def driver_gap(fits: dict, year: int, a: str, b: str) -> tuple[float, float]:
     return predicted_gap(fits[year], a, b)
 
 
-# ---------------------------------------------------------------------------- car pace
 def car_pace(base: dict, fits: dict) -> pd.DataFrame:
     """Car pace per team-season (Eq. 5), session-weighted over pairs (same as notebook 04)."""
     gaps, quali, usable = base["gaps"], base["quali"], base["usable"]
@@ -95,7 +84,6 @@ def car_pace(base: dict, fits: dict) -> pd.DataFrame:
     return car
 
 
-# ------------------------------------------------------------------------------ tracks
 def tracks(base: dict) -> pd.DataFrame:
     """Each circuit's most recent pole lap, to convert % gaps into seconds."""
     q = base["quali"].dropna(subset=["q3_seconds"])
@@ -107,7 +95,6 @@ def tracks(base: dict) -> pd.DataFrame:
     return pole.sort_values("name").reset_index(drop=True)
 
 
-# ----------------------------------------------------------------------- ML (notebook 05)
 FLIP = ["prior_f", "last_f", "age_diff", "exp_diff", "rookie_diff", "newteam_diff"]
 KEEP = ["has_prior", "has_last", "prior_se_f", "years_together", "reg_change"]
 FEATURES = FLIP + KEEP
@@ -156,6 +143,7 @@ def feature_row(base: dict, h: dict, a: str, b: str, season: int, *, assume_same
            "newteam_diff": moved(a) - moved(b),
            "years_together": sum(1 for y in h["together"].get((a, b), []) if y < season),
            "reg_change": int(season in REG_CHANGE_SEASONS)}
+
     row["has_prior"] = int(not np.isnan(prior))
     row["has_last"] = int(not np.isnan(row["last"]))
     row["prior_f"] = 0.0 if np.isnan(prior) else prior

@@ -22,8 +22,7 @@ MIN_SESSIONS = 8          # report Table 4
 REFERENCE = "george-russell"
 REG_CHANGE_SEASONS = {2014, 2017, 2022, 2026}
 
-# Teams that were renamed: map every name to the team's latest name, so a
-# driver's "years at team" survives a rebrand.
+# renamed teams -> their latest name (keeps "years at team" across a rebrand)
 TEAM_LINEAGE = {
     "toro-rosso": "racing-bulls", "alphatauri": "racing-bulls", "rb": "racing-bulls",
     "force-india": "aston-martin", "racing-point": "aston-martin",
@@ -33,7 +32,6 @@ TEAM_LINEAGE = {
 }
 
 
-# ------------------------------------------------------------------- plot styling
 BLUE, ORANGE = "#2a78d6", "#eb6834"          # series colours (blue first, orange second)
 INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
 BLUE_RAMP = ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b"]
@@ -58,7 +56,6 @@ def short(driver_id: str) -> str:
     return special.get(driver_id, driver_id.split("-")[-1].title())
 
 
-# --------------------------------------------------------------------------- files
 def find_file(name: str) -> str:
     """Return the path of a data file, looking in data/ first, then the current folder."""
     for folder in ["data", ".", "..", os.path.join("..", "data")]:
@@ -74,7 +71,6 @@ def load_gaps() -> pd.DataFrame:
     return add_outlier_flag(gaps)
 
 
-# ------------------------------------------------------------------ Eq. 2: outliers
 def add_outlier_flag(gaps: pd.DataFrame, k: float = 1.5) -> pd.DataFrame:
     """Flag gaps outside [Q1 - k*IQR, Q3 + k*IQR] within each pair-season."""
     gaps = gaps.copy()
@@ -86,7 +82,6 @@ def add_outlier_flag(gaps: pd.DataFrame, k: float = 1.5) -> pd.DataFrame:
     return gaps
 
 
-# ------------------------------------------------------ Eq. 3: pair-season summary
 def summarise_pair_season(s: pd.DataFrame, level: float = 0.95) -> pd.Series:
     """All statistics for one pair-season. `s` holds that pair-season's rows."""
     all_gaps = s["gap"]
@@ -143,7 +138,6 @@ def pair_gap(ps: pd.DataFrame, year: int, a: str, b: str) -> dict:
             "wins_a": wins_a, "wins_b": int(r["sessions"]) - wins_a, "sessions": int(r["sessions"])}
 
 
-# ------------------------------------------------------------- tau^2: season drift
 def estimate_tau2(ps: pd.DataFrame) -> tuple[float, pd.DataFrame]:
     """Season-to-season drift of a pair's gap, from pairs together in consecutive seasons.
 
@@ -159,7 +153,6 @@ def estimate_tau2(ps: pd.DataFrame) -> tuple[float, pd.DataFrame]:
     return max(both["excess"].mean(), 0.0), both
 
 
-# ------------------------------------------------------------ Eq. 4: simple chains
 def chain(links: list[tuple[float, float]], seasons_crossed: int, tau2: float):
     """Chain gaps G_AC = G_AB + G_BC + ...; SE^2 adds, plus m * tau^2.
 
@@ -171,7 +164,6 @@ def chain(links: list[tuple[float, float]], seasons_crossed: int, tau2: float):
     return g, np.sqrt(var), np.sqrt(var + seasons_crossed * tau2)
 
 
-# ------------------------------------------- driver ratings: weighted least squares
 def fit_ratings(ps: pd.DataFrame, target: int, tau2: float, *,
                 use_future: bool = True, max_distance: int | None = None,
                 drop_pair: tuple[str, str] | None = None,
@@ -252,7 +244,6 @@ def predicted_gap(fit: dict, a: str, b: str) -> tuple[float, float]:
     return th[a] - th[b], float(np.sqrt(max(var, 0.0)))
 
 
-# ------------------------------------------------------- Eq. 5: gap to fastest lap
 def session_gap_to_fastest(gaps: pd.DataFrame, quali: pd.DataFrame) -> pd.DataFrame:
     """Add P_A, P_B: each driver's % gap to the fastest lap anyone set in the same segment.
 

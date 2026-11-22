@@ -30,7 +30,6 @@ GREY = "#8a8984"
 TEAM_COLOURS = ["#2a78d6", "#eb6834", "#1fa37a", "#9b5de5", "#d6a12a", "#d64f73", "#3fb5c9", "#6b7a2a"]
 
 
-# ------------------------------------------------------------------------------ loading
 @st.cache_resource(show_spinner="Loading the data and computing the ratings...")
 def load_all():
     base = dd.load_base()
@@ -40,7 +39,7 @@ def load_all():
     return base, ratings, fits, car, tracks
 
 
-@st.cache_resource(show_spinner="Training the ML model (about 10 seconds)...")
+@st.cache_resource(show_spinner="Training the ML model")
 def load_ml():
     base = load_all()[0]
     return dd.train_ml(base)
@@ -76,7 +75,6 @@ numbers = dd.summary_numbers(base)
 seasons = [int(s) for s in base["seasons"]]
 latest = seasons[-1]
 
-# ------------------------------------------------------------------------------- header
 st.title("Separating driver skill from car performance in F1")
 st.caption(f"Teammate qualifying gaps, {numbers['first']} to round {numbers['last_round']} of {numbers['last']}. "
            "Every number comes with a 95% interval. Data: F1DB (CC BY 4.0).")
@@ -90,7 +88,6 @@ c5.metric("τ² (season drift)", f"{numbers['tau2']:.4f}")
 tab_ratings, tab_h2h, tab_car, tab_predict = st.tabs(
     ["Driver ratings", "Teammate head-to-head", "Car pace", "Predictor"])
 
-# ------------------------------------------------------------------------ driver ratings
 with tab_ratings:
     st.subheader("How far is each driver from George Russell?")
     st.write("Rating = a driver's average qualifying gap to Russell, in % of lap time. "
@@ -135,7 +132,6 @@ with tab_ratings:
             columns={"name": "Driver", "rating": "Rating (%)", "ci_low": "95% CI low",
                      "ci_high": "95% CI high", "se": "SE"}))
 
-# -------------------------------------------------------------------- teammate head-to-head
 with tab_h2h:
     st.subheader("Teammate head-to-head")
     usable = base["usable"]
@@ -176,7 +172,6 @@ with tab_h2h:
     show_chart((bars + mean_line).properties(height=320))
     st.caption("Dashed line = the mean of the clean sessions. Outliers (1.5 × IQR rule) are shown but left out of the mean.")
 
-# ------------------------------------------------------------------------------ car pace
 with tab_car:
     st.subheader("Car pace with the driver effect removed")
     st.write("How far each car would be from the fastest lap with a Russell-level driver in both seats "
@@ -212,7 +207,6 @@ with tab_car:
                      alt.Tooltip("car_pace:Q", format=".2f", title="Car pace (%)")])
         show_chart((err + ln + pt).properties(height=320))
 
-# ----------------------------------------------------------------------------- predictor
 with tab_predict:
     st.subheader("Predictor")
     mode = st.radio("What do you want to predict?",
